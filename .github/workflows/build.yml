@@ -23,10 +23,10 @@ jobs:
         # Wait for MariaDB to start up properly
         sleep 20
 
-    - name: Set up JDK 1.11
+    - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
-        java-version: 11
+        java-version: 17
 
     - name: Cache Maven Dependencies
       uses: actions/cache@v3
@@ -44,11 +44,11 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t iscanprint/retailbankingapp:2.2 .
+        docker build -t iscanprint/bankapp:3.1 .
 
     - name: Push Docker image
       run: |
-        docker push iscanprint/retailbankingapp:2.2
+        docker push iscanprint/bankapp:3.1
 
     - name: Logout from Docker Hub
       run: docker logout
