@@ -73,3 +73,8 @@ data:
   spring.datasource.url: "jdbc:mysql://${GCP_MYSQL_DB_HOST}:${GCP_MYSQL_DB_PORT}/demo?createDatabaseIfNotExist=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Kolkata&useSSL=false"
   spring.datasource.username: "${GCP_MYSQL_DB_UNAME}"
   spring.datasource.password: "${GCP_MYSQL_DB_PASSWD}"
+
+
+  #echo -n 'your_username' | base64
+  #echo -n 'your_password' | base64
+
