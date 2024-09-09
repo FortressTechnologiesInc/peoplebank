@@ -5,7 +5,7 @@ metadata:
   labels:
     app: banking-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: banking-app
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: banking-app
-        image: your-docker-registry/banking-app:latest
+        image: iscanprint/retailbankingapp:v2.2
         ports:
         - containerPort: 8080
         env:
@@ -48,7 +48,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
-  type: LoadBalancer
+  type: NodePort     #LoadBalancer
 
 ---
 
@@ -73,7 +73,7 @@ spec:
         image: mysql:8.0
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: password
+          value: "Test@123"
         - name: MYSQL_DATABASE
           value: bankingdb
         ports:
