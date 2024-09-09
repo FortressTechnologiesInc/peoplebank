@@ -75,6 +75,6 @@ data:
   spring.datasource.password: "${GCP_MYSQL_DB_PASSWD}"
 
 
-  #echo -n 'your_username' | base64
-  #echo -n 'your_password' | base64
+  #echo -n 'admin' | base64
+  #echo -n 'admin123' | base64
 
