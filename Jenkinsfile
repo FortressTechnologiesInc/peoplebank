@@ -19,7 +19,7 @@ pipeline {
         
         stage('2.0 Git Checkout') {
             steps {
-                git branch: 'main',  url: 'https://github.com/FortressTechnologiesInc/spring-boot-mongo-docker.git'
+                git branch: 'master',  url: 'https://github.com/FortressTechnologiesInc/peoplebank.git'
             }
         }
         
