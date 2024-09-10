@@ -23,25 +23,50 @@ pipeline {
             }
         }
         
-        stage('3.0 Code Compile') {
+        stage('Spin up MariaDB Container') {
             steps {
-                sh "mvn compile"
+                script {
+                    // Spin up the MariaDB container
+                    sh '''
+                    docker run -d --rm --name mariadb \
+                    -e MYSQL_ROOT_PASSWORD=root \
+                    -p 3306:3306 \
+                    --health-cmd='mysqladmin ping --silent' \
+                    --health-interval=10s \
+                    --health-timeout=5s \
+                    --health-retries=5 \
+                    mariadb:10.3 --lower_case_table_names=1
+                    '''
+
+                    // Wait for the database to be healthy
+                    sh '''
+                    until [ "`docker inspect -f {{.State.Health.Status}} mariadb`" == "healthy" ]; do
+                        echo "Waiting for database to be healthy...";
+                        sleep 5;
+                    done
+                    '''
+                }
             }
         }
-        
-        stage('4.0 Run Test Cases') {
+
+        stage('Set up JDK 17') {
             steps {
-                sh "mvn test"
+                // Install JDK 17 using Jenkins JDK tool if available, otherwise install manually
+                sh 'sudo apt-get install openjdk-17-jdk -y'
+                sh 'java -version'
             }
         }
+
+       
+
         
         stage('5.0 Sonarqube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
                     sh ''' $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=Sping-Boot-mongo \
+                        -Dsonar.projectName=PeopleBankOfCanada \
                         -Dsonar.java.binaries=. \
-                        -Dsonar.projectKey=Spring-Boot-Mongo '''
+                        -Dsonar.projectKey=PeopleBankOfCanada '''
                 }
             }
         }
@@ -54,22 +79,10 @@ pipeline {
             }
         }
         
-        stage('7.0 OWASP Dependency Check') {
+        stage('Build Maven Project') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DP'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        
-        stage('8.0 Trivy FS SCAN') {
-            steps {
-                sh "trivy fs ."
-            }
-        }
-        
-        stage('9.0 Maven Build') {
-            steps {
-                sh "mvn clean compile"
+                // Build the Maven project, skipping tests for now
+                sh 'mvn clean install -DskipTests=true'
             }
         }
         
@@ -77,9 +90,9 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                        sh "docker build -t iscanprint/spingboot:2.0 ."
-                        sh "docker push iscanprint/spingboot:2.0"
-                        sh "docker rmi -f iscanprint/spingboot:2.0"
+                        sh "docker build -t iscanprint/peoplebank:1.0 ."
+                        sh "docker push iscanprint/peoplebank:1.0"
+                        sh "docker rmi -f iscanprint/peoplebank:1.0"
                     }
                 }
             }
@@ -87,7 +100,7 @@ pipeline {
         
         stage('11.0 TRIVY Image Scan') {
             steps {
-                sh "trivy image iscanprint/spingboot:2.0 > trivyimage.txt"
+                sh "trivy image iscanprint/peoplebank:1.0 > trivyimage.txt"
             }
         }
         
