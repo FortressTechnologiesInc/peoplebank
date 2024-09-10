@@ -1,0 +1,108 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKERHUB_USERNAME = credentials('dockerhub-username')
+        DOCKERHUB_TOKEN = credentials('dockerhub-token')
+        IMAGE_TAG = "${env.GIT_COMMIT}"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Checkout the code
+                checkout scm
+            }
+        }
+
+        stage('Spin up MariaDB Container') {
+            steps {
+                script {
+                    // Spin up the MariaDB container
+                    sh '''
+                    docker run -d --rm --name mariadb \
+                    -e MYSQL_ROOT_PASSWORD=root \
+                    -p 3306:3306 \
+                    --health-cmd='mysqladmin ping --silent' \
+                    --health-interval=10s \
+                    --health-timeout=5s \
+                    --health-retries=5 \
+                    mariadb:10.3 --lower_case_table_names=1
+                    '''
+
+                    // Wait for the database to be healthy
+                    sh '''
+                    until [ "`docker inspect -f {{.State.Health.Status}} mariadb`" == "healthy" ]; do
+                        echo "Waiting for database to be healthy...";
+                        sleep 5;
+                    done
+                    '''
+                }
+            }
+        }
+
+        stage('Set up JDK 17') {
+            steps {
+                // Install JDK 17 using Jenkins JDK tool if available, otherwise install manually
+                sh 'sudo apt-get install openjdk-17-jdk -y'
+                sh 'java -version'
+            }
+        }
+
+        stage('Build Maven Project') {
+            steps {
+                // Build the Maven project, skipping tests for now
+                sh 'mvn clean install -DskipTests=true'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh 'echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image
+                    sh 'docker build -t iscanprint/retailbankingapp:${IMAGE_TAG} .'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push Docker image to Docker Hub
+                    sh 'docker push iscanprint/retailbankingapp:${IMAGE_TAG}'
+                }
+            }
+        }
+
+        stage('Docker Logout') {
+            steps {
+                // Logout from Docker Hub
+                sh 'docker logout'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up the MariaDB container after the build
+            sh 'docker stop mariadb || true'
+        }
+
+        success {
+            echo 'Build completed successfully.'
+        }
+
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
