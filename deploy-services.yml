@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: banking-app-deployment
+  name: peoplebank-deployment
   labels:
-    app: banking-app
+    app: peoplebank
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: banking-app
+      app: peoplebank
   template:
     metadata:
       labels:
-        app: banking-app
+        app: peoplebank
     spec:
       containers:
-      - name: banking-app
-        image: iscanprint/retailbankingapp:v2.2
+      - name: peoplebank
+        image: iscanprint/peoplebank:1.0    #retailbankingapp:v2.2
         ports:
         - containerPort: 8080
         env:
@@ -40,7 +40,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: banking-app-service
+  name: peoplebank-service 
 spec:
   selector:
     app: banking-app
