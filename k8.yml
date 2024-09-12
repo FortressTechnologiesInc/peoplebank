@@ -47,34 +47,34 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app:  peoplebankapp
+      app: peoplebankapp
   template:
     metadata:
       labels:
-        app:  peoplebankapp
+        app: peoplebankapp
     spec:
       containers:
-      - name:  peoplebankapp
+      - name: peoplebankapp
         image: iscanprint/peoplebank:1.1
         ports:
         - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
-          value: jdbc:mysql://localhost:3306/demo?createDatabaseIfNotExist=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+          value: jdbc:mysql://mysql-service:3306/bankappdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
         - name: SPRING_DATASOURCE_USERNAME
           value: admin
         - name: SPRING_DATASOURCE_PASSWORD
           value: admin123
 ---
-# Bank Application Service
+# Java Application Service
 apiVersion: v1
 kind: Service
 metadata:
-  name:  peoplebankapp-service
+  name: peoplebankapp-service
 spec:
-  type: NodePort   #LoadBalancer
+  type: NodePort  # Change to LoadBalancer if you need an external IP
   ports:
   - port: 80
     targetPort: 8080
   selector:
-    app: bankapp
+    app: peoplebankapp
