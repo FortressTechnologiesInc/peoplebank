@@ -42,19 +42,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: goldencatbankapp
+  name: peoplebankapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: goldencatbankapp
+      app:  peoplebankapp
   template:
     metadata:
       labels:
-        app: bankapp
+        app:  peoplebankapp
     spec:
       containers:
-      - name: goldencatbankapp
+      - name:  peoplebankapp
         image: iscanprint/peoplebank:1.1
         ports:
         - containerPort: 8080
@@ -70,7 +70,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: goldencatbankapp-service
+  name:  peoplebankapp-service
 spec:
   type: NodePort   #LoadBalancer
   ports:
