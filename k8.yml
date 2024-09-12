@@ -1,0 +1,80 @@
+---
+# MySQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:8
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "admin123"
+        - name: MYSQL_DATABASE
+          value: "bankappdb"
+        ports:
+        - containerPort: 3306
+          name: mysql
+---
+# MySQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+---
+# Java Application Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldencatbankapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goldencatbankapp
+  template:
+    metadata:
+      labels:
+        app: bankapp
+    spec:
+      containers:
+      - name: goldencatbankapp
+        image: iscanprint/peoplebank:1.1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://localhost:3306/demo?createDatabaseIfNotExist=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+        - name: SPRING_DATASOURCE_USERNAME
+          value: admin
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: admin123
+---
+# Bank Application Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: goldencatbankapp-service
+spec:
+  type: NodePort   #LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: bankapp
