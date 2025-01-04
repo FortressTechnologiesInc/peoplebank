@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: retail-banking
-        image: iscanprint/retailbankingapp:2.2
+        image: iscanprint/pbank:3.0
         ports:
         - containerPort: 8080
         env:
