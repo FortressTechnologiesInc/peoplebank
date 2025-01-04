@@ -27,7 +27,7 @@ jobs:
       # Grant privileges to the user
       - name: Grant MySQL Privileges
         run: |
-          docker exec -i $(docker ps -q) mysql -u root -padmin123 -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin123'; FLUSH PRIVILEGES;"
+          docker exec -i $(docker ps -q) mysql -u admin -padmin123 -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin123'; FLUSH PRIVILEGES;"
 
       # Set up JDK 17
       - name: Set up JDK 17
