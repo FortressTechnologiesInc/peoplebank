@@ -48,7 +48,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_UNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWD }}
         registry: docker.io
-        repository: subhrodip/retail-banking
+        repository: iscanprint/retail-banking
         tags: dev-${{ steps.extract_branch.outputs.branch }}
         labels: pipeline_build=true,cloud_build=true
         always_pull: true
