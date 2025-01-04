@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +20,8 @@ import xyz.subho.retail.banking.security.UserRole;
 import xyz.subho.retail.banking.service.UserService;
 
 @Controller
-public class HomeController implements ErrorController {
+public class HomeController {
 
-    private static final String PATH = "/error";
-    
     @Autowired
     private UserService userService;
 
@@ -48,19 +45,15 @@ public class HomeController implements ErrorController {
         return "signup";
     }
 
-    @SuppressWarnings("finally")
     @PostMapping("/signup")
     public String signupPost(@ModelAttribute("user") User user, Model model) {
         if (userService.checkUserExists(user.getUsername(), user.getEmail())) {
-
             if (userService.checkEmailExists(user.getEmail())) {
                 model.addAttribute("emailExists", true);
             }
-
             if (userService.checkUsernameExists(user.getUsername())) {
                 model.addAttribute("usernameExists", true);
             }
-
             return "signup";
         } else {
             try {
@@ -86,10 +79,5 @@ public class HomeController implements ErrorController {
         model.addAttribute("currentAccount", currentAccount);
         model.addAttribute("savingsAccount", savingsAccount);
         return "userFront";
-    }
-
-    @RequestMapping(value = PATH)
-    public String error() {
-        return "error";
     }
 }
