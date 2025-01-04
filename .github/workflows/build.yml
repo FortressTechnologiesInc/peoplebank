@@ -22,7 +22,7 @@ jobs:
       # Wait for MySQL to be ready
       - name: Wait for MySQL to be ready
         run: |
-          docker exec -i $(docker ps -q) /bin/bash -c "until mysqladmin ping --host=localhost --password=admin123 --silent; do echo 'Waiting for MySQL...'; sleep 2; done;"
+          docker exec -i $(docker ps -q) /bin/bash -c "until mysqladmin ping --host=0.0.0.0 --password=admin123 --silent; do echo 'Waiting for MySQL...'; sleep 2; done;"
 
       # Grant privileges to the user
       - name: Grant MySQL Privileges
