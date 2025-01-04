@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
       - name: peoplebankapp
-        image: iscanprint/peoplebank:1.1
+        image: iscanprint/pbank:3.0
         ports:
         - containerPort: 8080
         env:
@@ -72,7 +72,7 @@ kind: Service
 metadata:
   name: peoplebankapp-service
 spec:
-  type: NodePort  # Change to LoadBalancer if you need an external IP
+  type: LoadBalancer   # Change to LoadBalancer if you need an external IP
   ports:
   - port: 80
     targetPort: 8080
