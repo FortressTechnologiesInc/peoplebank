@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: peoplebank
-        image: iscanprint/peoplebank:1.0    #retailbankingapp:v2.2
+        image: iscanprint/pbank:3.0    #retailbankingapp:v2.2
         ports:
         - containerPort: 8080
         env:
@@ -48,7 +48,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
-  type: NodePort     #LoadBalancer
+  type: LoadBalancer
 
 ---
 
@@ -73,7 +73,7 @@ spec:
         image: mysql:8.0
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: "Test@123"
+          value: "admin123"
         - name: MYSQL_DATABASE
           value: bankingdb
         ports:
