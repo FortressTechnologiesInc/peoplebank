@@ -36,7 +36,7 @@ jobs:
           java-version: '11'
           java-package: jdk
           architecture: x64
-          distribution: 'adoptopenjdk'  # Specify JDK distribution
+          distribution: 'adoptopen'  # Specify JDK distribution
 
       # Cache Maven dependencies to speed up the build
       - name: Cache Maven Dependencies
