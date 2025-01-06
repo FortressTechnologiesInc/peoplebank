@@ -29,12 +29,11 @@ jobs:
         run: |
           docker exec -i $(docker ps -q) mysql -u root -padmin123 -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin123'; FLUSH PRIVILEGES;"
 
-      # Set up JDK 17
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      # Set up JDK 11
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
         with:
-          java-version: 17
-          distribution: temurin
+          java-version: '11'
 
       # Cache Maven dependencies to speed up the build
       - name: Cache Maven Dependencies
@@ -55,8 +54,8 @@ jobs:
         env:
           GCP_MYSQL_DB_HOST: 0.0.0.0
           GCP_MYSQL_DB_PORT: 3306
-          GCP_MYSQL_DB_UNAME: admin
-          GCP_MYSQL_DB_PASSWD: admin123
+          GCP_MYSQL_DB_UNAME: root
+          GCP_MYSQL_DB_PASSWD: root
 
       # Login to Docker Hub for pushing images
       - name: Login to Docker Hub
@@ -68,12 +67,12 @@ jobs:
       # Build Docker image
       - name: Build Docker Image
         run: |
-          docker build -t iscanprint/pbank:3.0 .
+          docker build -t iscanprint/pbank:3.1 .
 
       # Push Docker image to Docker Hub
       - name: Push Docker Image
         run: |
-          docker push iscanprint/pbank:3.0
+          docker push iscanprint/pbank:3.1
 
       # Logout from Docker Hub after pushing
       - name: Logout from Docker Hub
