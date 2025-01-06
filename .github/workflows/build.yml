@@ -17,7 +17,7 @@ jobs:
 
       # Spin up a MySQL database container
       - name: Spin Database Container
-        run: docker run -d --rm -e MYSQL_ROOT_PASSWORD=admin123 -p 3306:3306 mariadb:10.3 --lower_case_table_names=1
+        run: docker run -d --rm -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 mariadb:10.3 --lower_case_table_names=1
 
       # Wait for MySQL to be ready
       - name: Wait for MySQL to be ready
@@ -27,7 +27,7 @@ jobs:
       # Grant privileges to the user
       - name: Grant MySQL Privileges
         run: |
-          docker exec -i $(docker ps -q) mysql -u root -padmin123 -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin123'; FLUSH PRIVILEGES;"
+          docker exec -i $(docker ps -q) mysql -u root -proot  -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin123'; FLUSH PRIVILEGES;"
 
       # Set up JDK 11 (using actions/setup-java@v2)
       - name: Set up JDK 17
