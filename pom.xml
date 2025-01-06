@@ -24,6 +24,11 @@
 
     <properties>
         <java.version>11</java.version>
+        
+        <!-- SonarCloud Configuration -->
+        <sonar.projectKey>ohbus_retail-banking</sonar.projectKey>
+        <sonar.organization>ohbus</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
@@ -92,11 +97,18 @@
 
     <build>
         <plugins>
+            <!-- Sonar Maven Plugin -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version>
+            </plugin>
+
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
-
 </project>
