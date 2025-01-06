@@ -13,32 +13,20 @@ jobs:
       # Checkout code from the repository
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Disable shallow clone to improve reporting
 
       # Spin up a MySQL database container
       - name: Spin Database Container
         run: docker run -d --rm -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 mariadb:10.3 --lower_case_table_names=1
-
-      # Wait for MySQL to be ready
-      - name: Wait for MySQL to be ready
-        run: |
-          docker exec -i $(docker ps -q) /bin/bash -c "until mysqladmin ping --host=0.0.0.0 --password=admin123 --silent; do echo 'Waiting for MySQL...'; sleep 2; done;"
-
-      # Grant privileges to the user
-      - name: Grant MySQL Privileges
-        run: |
-          docker exec -i $(docker ps -q) mysql -u root -proot  -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin123'; FLUSH PRIVILEGES;"
-
-      # Set up JDK 11 (using actions/setup-java@v2)
+    
+      # Set up JDK 17 (Consider updating to Java 17 for compatibility with modern tools)
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          java-package: jdk
-          architecture: x64
-          distribution: 'temurin'  # Updated distribution for JDK setup
+          distribution: 'temurin'  # Temurin is the recommended distribution
 
-      # Cache Maven dependencies to speed up the build
+      # Cache Maven dependencies to speed up builds
       - name: Cache Maven Dependencies
         uses: actions/cache@v2
         with:
@@ -46,12 +34,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
-      # Run Maven build (without running tests)
-      - name: Run Maven Build
-        run: mvn clean install -DskipTests -Dsonar.skip=true
-
-      # Run Maven build with verification (testing)
+    
+      # Build with Maven (Run tests here)
       - name: Build with Maven
         run: mvn clean verify
         env:
@@ -59,6 +43,12 @@ jobs:
           GCP_MYSQL_DB_PORT: 3306
           GCP_MYSQL_DB_UNAME: root
           GCP_MYSQL_DB_PASSWD: root
+
+      # Extract branch name
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
+        id: extract_branch
 
       # Login to Docker Hub for pushing images
       - name: Login to Docker Hub
